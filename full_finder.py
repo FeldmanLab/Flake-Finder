@@ -12,7 +12,7 @@ def nothing(x):
 
 RGBbounds = np.zeros((5,3,3,6),dtype=int) #array which contains all information about bounds
 #dimensions are material, thickness, zoom, then values
-RGBbounds[0][0][0][:] = [161,151,120,108,130,112] #in order highR, lowR, highG, lowG, highB, lowB
+RGBbounds[0][0][0][:] = [20,8,16,7,20,7] #in order highR, lowR, highG, lowG, highB, lowB
 RGBbounds[0][0][1][:] = [165,160,129,122,134,126] #in order highR, lowR, highG, lowG, highB, lowB
 RGBbounds[0][0][2][:] = [165,142,140,126,157,140] #in order highR, lowR, highG, lowG, highB, lowB
 
