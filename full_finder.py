@@ -6,6 +6,7 @@ import math
 import keyboard
 import mouse
 import time
+from statistics import mode
 
 def nothing(x):
 	pass
@@ -133,12 +134,12 @@ b = tk.Button(coords, text="ok", command = getVals)
 b.grid(row = 4)
 coords.mainloop()
 
-highR = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][0])       #load in boundaries
-lowR = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][1])        #from selected material & thickness
-highG = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][2])
-lowG = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][3])
-highB = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][4])
-lowB = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][5])
+highRC = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][0])       #load in boundaries
+lowRC = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][1])        #from selected material & thickness
+highGC = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][2])
+lowGC = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][3])
+highBC = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][4])
+lowBC = int(RGBbounds[material_dict[material]][0][zoom_RGB_dict[zoom]][5])
 
 x_travel_count = math.ceil((vals[3]-vals[0])/zoom_horiz_travel_dict[zoom]) #compute number of moves for x and y
 y_travel_count = math.ceil((vals[7]-vals[4])/zoom_vert_travel_dict[zoom])
@@ -159,6 +160,21 @@ def process(i):
 
     img_native = cv.cvtColor(np.array(cap), cv.COLOR_BGR2RGB)
     img_cropped = img_native[crop_tl[1]:crop_br[1], crop_tl[0]:crop_br[0]]
+
+    Z = img_cropped.reshape((-1,3))
+    Z = np.float32(Z)
+    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 5, .5)
+    K = 6
+    ret,label,center=cv.kmeans(Z,K,None,criteria,10,cv.KMEANS_RANDOM_CENTERS)
+    center = np.uint8(center)
+    background = center[mode(label.flatten())]
+
+    highR = (highRC-20)/100*background[0]+background[0]
+    lowR = (lowRC-20)/100*background[0]+background[0]
+    highG = (highGC-20)/100*background[0]+background[0]
+    lowG = (lowGC-20)/100*background[0]+background[0]
+    highB = (highBC-20)/100*background[0]+background[0]
+    lowB = (lowBC-20)/100*background[0]+background[0]
 
     img_binary = cv.inRange(img_cropped, (lowR, lowG, lowB), (highR,highG,highB))
 
